@@ -27,6 +27,7 @@ jobs:
       - run: npm run check:runtime
       - run: node node_modules/typescript/bin/tsc
       - run: node node_modules/vite/bin/vite.js build --base=/muchimon-parent-report/
+      - run: node scripts/fix-pages-asset-paths.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
