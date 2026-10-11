@@ -15,6 +15,7 @@ Before making substantial visual changes, use the Product Design plugin's `get-c
 - All app-owned screens use one smartphone-first sizing system: 16px horizontal margins, 12px-or-larger body copy, and at least 44px touch targets. Dense report sections should scroll vertically instead of shrinking text into desktop-style multi-column layouts.
 - After selecting a child, open a child-specific summary dashboard before any single report. Lead with a concrete parent action, show learning and chat highlights together, and offer one clear link to each report. Keep period selection inside the detailed report rather than on the summary dashboard.
 - Voice-prompt details open in a tall, phone-scoped bottom sheet. The detail content scrolls vertically, and the return action stays easy to reach while reading.
+- Detailed reports stay requirement-led: learning shows only the metrics, inferred subjects/units, period-specific focus or change, and voice prompts defined for that period; chat uses only overview, topic/usage data, qualitative changes, and voice prompts. Do not add progress charts, unit maps, scores, comparisons with other children, or diagnostic language unless requirements change.
 
 When implementing from a selected generated mock, treat that image as the source of truth for layout, component anatomy, density, spacing, color, typography, visible content, and hierarchy.
 

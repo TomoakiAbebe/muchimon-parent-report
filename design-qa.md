@@ -51,4 +51,13 @@
 - [x] Voice-prompt details are readable in a scrollable phone-scoped sheet with a persistent return action.
 - [x] Runtime, build, and packaging checks pass.
 
+## Requirement-led report reconstruction
+
+- Learning report checked at `1日`, `1週間`, and `1か月`: each period now shows only its required time metrics, inferred subjects/units, period-specific focus or prior-month change, and a voice-prompt entry point.
+- Removed from the rendered learning report: daily/weekly/monthly progress charts and the speculative unit map.
+- Chat report checked at `1週間` and `1か月`: the content is limited to the four required elements—overview, topic/usage data, qualitative interests and changes, and one or two voice prompts.
+- Removed from the rendered chat report: usage trend charts, decorative family/parent illustrations, and unrelated detail actions.
+- Period switching returns the scroll area to the top, so the parent never lands midway through a newly selected report.
+- Voice-prompt detail copy now follows the selected period and report type. Chat copy avoids diagnosis and uses observation-based language.
+
 final result: passed
