@@ -2,55 +2,51 @@
 
 ## Comparison target
 
-- Source visual truth: `public/assets/reference/children-reference.png`, `public/assets/reference/learning-reference.png`, and `public/assets/reference/chat-reference.png`.
-- Implementation screenshots: `audit/01-children-final.png`, `audit/02-learning-final.png`, and `audit/03-chat-final.png`.
-- Combined comparison evidence: `audit/04-comparison-board.png` and `public/qa.html`.
-- Source pixels: children `853 × 1875`; learning and chat `942 × 1536`.
-- Implementation viewport: iPhone app screen `393 × 852` CSS px at device scale factor 1. Pixel 10 was also checked at `427 × 952` CSS px.
-- State: child list, learning / 1週間, and chat / 1か月.
+- Source visual truth: the established Muchimon mobile language in `audit/01-children-final.png`, `audit/02-learning-final.png`, and `audit/03-chat-final.png`, plus the approved requirement that a selected child's first screen combines learning and chat and tells the parent what to do first.
+- Implementation screenshot: `audit/05-child-overview-browser.png`.
+- Source app-screen pixels: `393 × 852` at device scale factor 1.
+- Implementation browser capture: `1058 × 660`; the runtime scales the `393 × 852` iPhone screen uniformly to fit the Chrome canvas. Visual judgment was limited to app-owned content and did not compare browser canvas or device-frame padding.
+- State: child list → あいさん → combined overview; learning `1日`; chat `1週間`.
 
 ## Evidence reviewed
 
-- Full-view comparison: all three source references and live implementations were displayed together on the QA board.
-- Focused comparison: each final implementation state was captured from `[data-phone-screen]` at exactly `393 × 852` CSS px.
-- Primary interactions tested: child selection, learning/chat navigation, period tabs, back to child list, settings sheet, and add-child sheet.
-- Console errors checked: no warnings or errors.
+- Full-view comparison: the existing child list and report captures were compared with the new combined overview for palette, typography, card anatomy, icon treatment, spacing, and bottom navigation.
+- Focused comparison: above-the-fold parent action, combined learning/chat summary, learning entry card, and three-item bottom navigation.
+- Primary interactions tested in Chrome: child selection, voice-prompt sheet, direct `1日` learning shortcut, learning period tabs, direct chat report opening, `1週間` chat state, return to summary, and return to child list.
+- Runtime integrity, TypeScript production build, and Sites packaging tests passed.
 
 ## Findings
 
 - No actionable P0, P1, or P2 issue remains.
-- Fonts and typography: body copy is 12px or larger, section headings are 18px or larger, and control labels remain legible without horizontal scrolling. Chart annotations are the only intentionally compact supporting labels.
-- Spacing and layout rhythm: app-owned screens use 16px horizontal margins, 14px section gaps, 20px report-card radii, and vertically stacked mobile sections.
-- Colors and visual tokens: the approved pale blue, white, green, navy, yellow, and blue system remains consistent across all three screens.
-- Image quality and asset fidelity: child identity uses neutral pictograms. Existing parent/child illustrations retain their intended crop and aspect ratio.
-- Copy and content: effort-first learning language, non-diagnostic conversation summaries, small changes, and voice-prompt guidance remain intact.
-- Interaction and accessibility: back, settings, period tabs, report CTAs, add child, and bottom navigation meet or exceed 44×44 CSS px. Focus indicators are visible.
-
-## Intentional deviations from the visual references
-
-- Dense desktop-like two-column report sections were changed to a single-column mobile reading flow.
-- Small 8–10px body copy was increased to 12px or larger.
-- The implementation shows less content above the fold and relies on vertical scrolling; this is intentional to improve mobile readability and tap accuracy.
+- Fonts and typography: Roboto/Hiragino Sans/Yu Gothic are preserved; labels, headings, values, and explanatory copy retain the established hierarchy without truncation.
+- Spacing and layout rhythm: 16px screen gutters, 14px section gaps, rounded cards, and 44px-or-larger controls remain consistent. The overview uses vertical scrolling instead of shrinking all content above the fold.
+- Colors and visual tokens: learning remains green, chat remains blue, and the first-action card uses the existing warm yellow hint treatment.
+- Image quality and asset fidelity: the new overview uses the existing Radix pictogram/icon system and does not add placeholder or decorative raster assets. Existing report illustrations remain unchanged.
+- Copy and content: the first instruction is concrete but non-prescriptive, learning and conversation data are shown together, and conversation language remains non-diagnostic.
+- Information architecture: the selected-child landing screen now contains one recommended action, a cross-report summary, both report entry points, and direct time-period shortcuts. Detailed reports remain available through the same period tabs.
+- Accessibility and interaction: controls retain explicit accessible names and 44px targets; the active summary/learning/chat section is reflected in the persistent three-item bottom navigation.
 
 ## Comparison history
 
-- Earlier pass: child card colors were corrected to white surfaces with scoped identity accents.
-- Current pass: audit found undersized text, compact 34–40px controls, and dense multi-column report cards.
-- Fixes: introduced one smartphone-first sizing system, increased primary targets to 44px or larger, increased body copy, aligned icon containers, stacked dense sections, and removed the card-level duplicate navigation target.
-- Post-fix evidence: `audit/01-children-final.png`, `audit/02-learning-final.png`, and `audit/03-chat-final.png` show the corrected 393×852 states. Pixel 10 also renders without horizontal overflow.
+- Earlier state: selecting a child opened the weekly learning report immediately, so parents had to infer the next action and switch sections to discover conversation insights.
+- First redesign pass: added the parent-action card, cross-report summary, both report entry cards, direct period shortcuts, and a summary tab.
+- QA finding: daily learning still displayed a weekly graph, and weekly chat still displayed a monthly total.
+- Fix applied: daily learning now shows subject-level time; weekly chat now shows weekly totals and daily usage bars. Monthly states retain month-level totals and weekly bars.
+- Post-fix evidence: Chrome interaction checks confirm the intended overview → report → period flow and correct selected periods.
 
 ## Follow-up polish
 
-- [P3] Validate production color tokens with an automated contrast checker when final brand colors are fixed.
-- [P3] Run VoiceOver and TalkBack checks when the prototype moves to production implementation.
+- [P3] Replace the sample date range with live report-period data when the prototype is connected to production data.
+- [P3] Run VoiceOver and TalkBack checks before production release.
 
 ## Implementation checklist
 
-- [x] Smartphone-only sizing system applied across all screens.
-- [x] Icon and text alignment normalized.
-- [x] Touch targets meet the 44px mobile target.
-- [x] Dense report content converted to a vertical reading flow.
-- [x] iPhone and Pixel smartphone sizes checked.
-- [x] Runtime integrity, production build, and Sites packaging tests pass.
+- [x] Selected-child landing screen combines learning and chat.
+- [x] Parent's first recommended action is shown before analytics.
+- [x] Learning and chat report entry points are visible on the same screen.
+- [x] Direct day/week/month shortcuts work.
+- [x] Persistent summary/learning/chat navigation works.
+- [x] Period-specific content is internally consistent.
+- [x] Runtime, build, and packaging checks pass.
 
 final result: passed
