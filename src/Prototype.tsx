@@ -46,13 +46,13 @@ function ChildrenScreen({ onSelect, openSheet }: { onSelect: (child: Child) => v
           <div className="pictogram-family" aria-hidden="true"><ChildPictogram tone="green" compact /><ChildPictogram tone="blue" compact /><ChildPictogram tone="yellow" compact /></div>
         </section>
         <div className="child-card-list">
-          {children.map((child) => <article className={`child-card child-tone-${child.tone}`} key={child.id} onClick={() => onSelect(child)}>
+          {children.map((child) => <article className={`child-card child-tone-${child.tone}`} key={child.id}>
             <button className="child-settings" aria-label={`${child.name}の設定`} onClick={(event) => { event.stopPropagation(); openSheet(`${child.name}の設定`); }}><GearIcon /></button>
             <div className="child-card-main">
               <div className="child-portrait"><ChildPictogram tone={child.tone} /></div>
               <div className="child-profile"><h2>{child.name}</h2><p>{child.grade}</p><div className={`child-highlight ${child.id === "ai" ? "learning" : "chatting"}`}>{child.id === "ai" ? <BarChartIcon /> : <ChatBubbleIcon />}<span>{child.id === "ai" ? <>今週 <strong>{child.learningDays}日</strong><br />取り組みました</> : <><strong>学校の話題が</strong><br />多く見られました</>}</span><ChevronRightIcon /></div></div>
             </div>
-            <button className="view-report-button" onClick={(event) => { event.stopPropagation(); onSelect(child); }}>レポートを見る<ChevronRightIcon /></button>
+            <button className="view-report-button" onClick={() => onSelect(child)}>レポートを見る<ChevronRightIcon /></button>
           </article>)}
         </div>
         <button className="add-child-button" onClick={() => openSheet("お子さまを追加")}><span><PlusIcon /></span>お子さまを追加</button>

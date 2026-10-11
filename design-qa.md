@@ -2,49 +2,55 @@
 
 ## Comparison target
 
-- Source visual truth path: `public/assets/reference/children-reference.png`, plus the existing learning and chat references.
-- Browser-rendered implementation: `http://127.0.0.1:4180/#children`.
-- Implementation screenshot evidence: the browser-rendered children screen embedded in `public/qa.html` and captured as a full-page comparison in the Codex in-app browser.
-- Combined comparison artifact path: `public/qa.html`.
+- Source visual truth: `public/assets/reference/children-reference.png`, `public/assets/reference/learning-reference.png`, and `public/assets/reference/chat-reference.png`.
+- Implementation screenshots: `audit/01-children-final.png`, `audit/02-learning-final.png`, and `audit/03-chat-final.png`.
+- Combined comparison evidence: `audit/04-comparison-board.png` and `public/qa.html`.
 - Source pixels: children `853 × 1875`; learning and chat `942 × 1536`.
-- Implementation CSS viewport: iPhone app screen `393 × 852` at device scale factor 1; the comparison board was viewed at `1400 × 1200`.
-- State: child selection list, learning / 1週間, and chat / 1か月.
+- Implementation viewport: iPhone app screen `393 × 852` CSS px at device scale factor 1. Pixel 10 was also checked at `427 × 952` CSS px.
+- State: child list, learning / 1週間, and chat / 1か月.
 
 ## Evidence reviewed
 
-- Full-view comparison: the selected pictogram mock and browser-rendered children list were displayed side by side on the QA board.
-- Focused comparison: the direct `#children` screen was inspected at the unscaled mobile runtime size for type, card spacing, icon treatment, CTA placement, and bottom content clearance.
-- Primary interactions tested: select あい, open learning report, switch to おしゃべり, return to the child list, open/close お子さま追加, and open/close あいの設定.
+- Full-view comparison: all three source references and live implementations were displayed together on the QA board.
+- Focused comparison: each final implementation state was captured from `[data-phone-screen]` at exactly `393 × 852` CSS px.
+- Primary interactions tested: child selection, learning/chat navigation, period tabs, back to child list, settings sheet, and add-child sheet.
 - Console errors checked: no warnings or errors.
 
 ## Findings
 
-- No actionable P0, P1, or P2 mismatch remains.
-- Fonts and typography: the Japanese display hierarchy, weights, line heights, and compact support copy follow the selected reference without truncation.
-- Spacing and layout rhythm: hero, two stacked profile cards, full-width CTAs, add-child control, and privacy note retain the reference's ordering and rounded-card cadence.
-- Colors and visual tokens: pale blue canvas, white cards, green CTAs, navy text, and restrained yellow/blue identity accents match the approved direction.
-- Image quality and asset fidelity: child identities use neutral Radix person pictograms rather than portraits or character illustrations. The pictograms are crisp at runtime density and preserve the approved neutral treatment.
-- Copy and content: the child names, grades, weekly learning summary, conversation summary, add-child label, and privacy note match the selected concept.
-- Accessibility and interaction: child selection, labeled settings buttons, report navigation, and sheets are keyboard/semantic-button accessible.
+- No actionable P0, P1, or P2 issue remains.
+- Fonts and typography: body copy is 12px or larger, section headings are 18px or larger, and control labels remain legible without horizontal scrolling. Chart annotations are the only intentionally compact supporting labels.
+- Spacing and layout rhythm: app-owned screens use 16px horizontal margins, 14px section gaps, 20px report-card radii, and vertically stacked mobile sections.
+- Colors and visual tokens: the approved pale blue, white, green, navy, yellow, and blue system remains consistent across all three screens.
+- Image quality and asset fidelity: child identity uses neutral pictograms. Existing parent/child illustrations retain their intended crop and aspect ratio.
+- Copy and content: effort-first learning language, non-diagnostic conversation summaries, small changes, and voice-prompt guidance remain intact.
+- Interaction and accessibility: back, settings, period tabs, report CTAs, add child, and bottom navigation meet or exceed 44×44 CSS px. Focus indicators are visible.
+
+## Intentional deviations from the visual references
+
+- Dense desktop-like two-column report sections were changed to a single-column mobile reading flow.
+- Small 8–10px body copy was increased to 12px or larger.
+- The implementation shows less content above the fold and relies on vertical scrolling; this is intentional to improve mobile readability and tap accuracy.
 
 ## Comparison history
 
-- Iteration 1 found a P1 color-class collision that filled the entire child cards with yellow and blue instead of keeping the approved white-card surfaces.
-- Fix: renamed child tone classes to scoped `child-tone-*` selectors and limited color to the pictogram/backdrop accents.
-- Post-fix evidence: the direct browser view and refreshed side-by-side QA board show white cards with soft yellow/blue identity treatments; no actionable P0/P1/P2 mismatch remains.
+- Earlier pass: child card colors were corrected to white surfaces with scoped identity accents.
+- Current pass: audit found undersized text, compact 34–40px controls, and dense multi-column report cards.
+- Fixes: introduced one smartphone-first sizing system, increased primary targets to 44px or larger, increased body copy, aligned icon containers, stacked dense sections, and removed the card-level duplicate navigation target.
+- Post-fix evidence: `audit/01-children-final.png`, `audit/02-learning-final.png`, and `audit/03-chat-final.png` show the corrected 393×852 states. Pixel 10 also renders without horizontal overflow.
 
 ## Follow-up polish
 
-- [P3] Final brand pictograms can replace the library person glyphs when the Muchimon production icon set is available.
-- [P3] Production data should add long-name, no-activity, and more-than-two-children states.
+- [P3] Validate production color tokens with an automated contrast checker when final brand colors are fixed.
+- [P3] Run VoiceOver and TalkBack checks when the prototype moves to production implementation.
 
 ## Implementation checklist
 
-- [x] Child list is the initial screen.
-- [x] Pictogram identities replace child illustrations.
-- [x] Child selection opens that child's report.
-- [x] Learning/chat switching and return navigation work.
-- [x] Add-child and settings sheets work.
-- [x] Mobile runtime integrity, production build, and Sites packaging tests pass.
+- [x] Smartphone-only sizing system applied across all screens.
+- [x] Icon and text alignment normalized.
+- [x] Touch targets meet the 44px mobile target.
+- [x] Dense report content converted to a vertical reading flow.
+- [x] iPhone and Pixel smartphone sizes checked.
+- [x] Runtime integrity, production build, and Sites packaging tests pass.
 
 final result: passed

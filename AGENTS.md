@@ -12,6 +12,7 @@ Before making substantial visual changes, use the Product Design plugin's `get-c
 
 - The initial screen is the child-selection list; a child must be selected before opening learning or chat reports.
 - Child identity is represented with neutral, friendly pictograms rather than character illustrations or portraits.
+- All app-owned screens use one smartphone-first sizing system: 16px horizontal margins, 12px-or-larger body copy, and at least 44px touch targets. Dense report sections should scroll vertically instead of shrinking text into desktop-style multi-column layouts.
 
 When implementing from a selected generated mock, treat that image as the source of truth for layout, component anatomy, density, spacing, color, typography, visible content, and hierarchy.
 
