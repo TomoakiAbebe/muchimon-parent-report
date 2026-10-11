@@ -8,6 +8,11 @@ Before planning or implementing any mobile-app change, read this `AGENTS.md` in 
 
 Before making substantial visual changes, use the Product Design plugin's `get-context` skill when the visual source is unclear or no longer matches the current goal. When the user gives durable prototype-specific design feedback, preferences, or decisions, record them in `AGENTS.md`.
 
+## Prototype-specific design decisions
+
+- The initial screen is the child-selection list; a child must be selected before opening learning or chat reports.
+- Child identity is represented with neutral, friendly pictograms rather than character illustrations or portraits.
+
 When implementing from a selected generated mock, treat that image as the source of truth for layout, component anatomy, density, spacing, color, typography, visible content, and hierarchy.
 
 ## Editing Boundary
