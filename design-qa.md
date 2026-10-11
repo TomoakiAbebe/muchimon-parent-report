@@ -13,6 +13,7 @@
 - Full-view comparison: the existing child list and report captures were compared with the new combined overview for palette, typography, card anatomy, icon treatment, spacing, and bottom navigation.
 - Focused comparison: above-the-fold parent action, combined learning/chat summary, learning entry card, and three-item bottom navigation.
 - Primary interactions tested in Chrome: child selection, voice-prompt sheet, direct `1日` learning shortcut, learning period tabs, direct chat report opening, `1週間` chat state, return to summary, and return to child list.
+- Voice-prompt detail state tested in Chrome: the 82% height sheet opens above app navigation, its 1,098px content scrolls within a 620px viewport, and the fixed return button remains visible before and after scrolling.
 - Runtime integrity, TypeScript production build, and Sites packaging tests passed.
 
 ## Findings
@@ -47,6 +48,7 @@
 - [x] Period selection is available after opening each detailed report.
 - [x] Persistent summary/learning/chat navigation works.
 - [x] Period-specific content is internally consistent.
+- [x] Voice-prompt details are readable in a scrollable phone-scoped sheet with a persistent return action.
 - [x] Runtime, build, and packaging checks pass.
 
 final result: passed

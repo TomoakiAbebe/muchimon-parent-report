@@ -204,6 +204,41 @@ function ChatReport({ period, openDetails }: { period: string; openDetails: (kin
   </div>;
 }
 
+function VoiceHintDetail({ child, onClose }: { child: Child; onClose: () => void }) {
+  const isAi = child.id === "ai";
+  return <div className="detail-sheet-content voice-hint-detail">
+    <div className="voice-hint-intro">
+      <IconBubble tone="yellow"><LightningBoltIcon /></IconBubble>
+      <h3>まずは、頑張った過程を<br />そのまま伝えてみましょう</h3>
+      <p>{child.name}さんの今週の様子から、会話を始めやすい声かけをまとめました。</p>
+    </div>
+
+    <section className="voice-hint-section" aria-labelledby="voice-hint-observations">
+      <div className="voice-hint-section-title"><span>1</span><h4 id="voice-hint-observations">今週見られたこと</h4></div>
+      <div className="voice-hint-observation learning-observation"><ReaderIcon /><p><b>学習</b>{isAi ? "5日間、算数を中心に3教科へ取り組んだようです。" : "3日間、国語を中心に続けて取り組む様子が見られました。"}</p></div>
+      <div className="voice-hint-observation chat-observation"><ChatBubbleIcon /><p><b>おしゃべり</b>{isAi ? "学校の話題が多く、友だちや将来の話も少し増えた様子があります。" : "好きな遊びについて、楽しそうに話す場面が増えたようです。"}</p></div>
+    </section>
+
+    <section className="voice-hint-section" aria-labelledby="voice-hint-examples">
+      <div className="voice-hint-section-title"><span>2</span><h4 id="voice-hint-examples">声かけの例</h4></div>
+      <div className="voice-hint-example"><small>続けたことを伝える</small><p>「今週もよく続けていたね」</p></div>
+      <div className="voice-hint-example"><small>取り組みを具体的に伝える</small><p>「{isAi ? "算数に何度も取り組んでいたね" : "国語を続けていたね"}」</p></div>
+      <div className="voice-hint-example"><small>興味を会話につなげる</small><p>「最近、{isAi ? "学校ではどんなことが楽しい？" : "どんな遊びが楽しい？"}」</p></div>
+    </section>
+
+    <section className="voice-hint-section voice-hint-points" aria-labelledby="voice-hint-points">
+      <div className="voice-hint-section-title"><span>3</span><h4 id="voice-hint-points">伝えるときのポイント</h4></div>
+      <ul>
+        <li>結果ではなく、始めたことや続けたことをそのまま伝えます。</li>
+        <li>答えを求めすぎず、会話のきっかけとして軽く聞いてみます。</li>
+      </ul>
+      <p className="voice-hint-note">お子さまの気持ちを決めつけず、反応に合わせて無理なく使ってみてください。</p>
+    </section>
+
+    <div className="voice-hint-close-wrap"><button onClick={onClose}>レポートに戻る</button></div>
+  </div>;
+}
+
 export default function Prototype() {
   const keyboard = useKeyboard();
   const [view, setView] = useState<View>(() => window.location.hash === "#chat" || window.location.hash === "#learning" ? "report" : window.location.hash === "#overview" ? "overview" : "children");
@@ -218,6 +253,7 @@ export default function Prototype() {
   const returnToOverview = () => { keyboard.hide(); setView("overview"); setSheet(null); window.history.replaceState(null, "", "#overview"); };
   const returnToChildren = () => { keyboard.hide(); setView("children"); setSheet(null); window.history.replaceState(null, "", "#children"); };
   const sheetIsChildAction = sheet?.includes("設定") || sheet === "お子さまを追加";
+  const sheetIsVoiceHint = sheet === "今週の声かけ" || sheet === "声かけのヒント";
 
   return <div className={`report-app ${view === "children" ? "children-view" : mode}`}>
     {view === "children" ? <ChildrenScreen onSelect={openOverview} openSheet={setSheet} /> : <>
@@ -225,6 +261,8 @@ export default function Prototype() {
       <MobileScroll key={`${selectedChild.id}-${view}-${mode}`} className={`report-scroll ${view === "overview" ? "overview-scroll" : ""}`}><main className="screen-content" data-testid="report-screen">{view === "overview" ? <ChildOverview child={selectedChild} openReport={openReport} openDetails={setSheet} /> : mode === "learning" ? <LearningReport period={period} openDetails={setSheet} child={selectedChild} /> : <ChatReport period={period} openDetails={setSheet} />}</main></MobileScroll>
       <nav className="bottom-nav" aria-label="レポート種別"><button type="button" tabIndex={-1} onPointerDown={(event) => event.preventDefault()} className={view === "overview" ? "active" : ""} onClick={returnToOverview}><PersonIcon /><span>まとめ</span></button><button type="button" tabIndex={-1} onPointerDown={(event) => event.preventDefault()} className={view === "report" && mode === "learning" ? "active" : ""} onClick={() => switchMode("learning")}><ReaderIcon /><span>学習</span></button><button type="button" tabIndex={-1} onPointerDown={(event) => event.preventDefault()} className={view === "report" && mode === "chat" ? "active" : ""} onClick={() => switchMode("chat")}><ChatBubbleIcon /><span>おしゃべり</span></button></nav>
     </>}
-    <BottomSheet open={Boolean(sheet)} onOpenChange={(open) => !open && setSheet(null)} title={sheet ?? "詳細"} description={sheetIsChildAction ? "保護者の方が管理する情報です。" : "レポートから分かることを、やさしくまとめています。"} snap={0.55}><div className="detail-sheet-content">{sheetIsChildAction ? <PersonIcon className="sheet-person-icon" /> : <IconBubble tone={sheet === "今週の声かけ" ? "yellow" : "green"}>{sheet === "今週の声かけ" ? <LightningBoltIcon /> : <ReaderIcon />}</IconBubble>}<h3>{sheetIsChildAction ? sheet : sheet === "今週の声かけ" ? `「今週もよく続けていたね」` : "取り組みを見つけるヒント"}</h3><p>{sheet === "お子さまを追加" ? "お子さまのプロフィール追加は、次のステップで設定できます。" : sheet?.includes("設定") ? "学年や表示名などのプロフィール情報を確認・変更できます。" : sheet === "今週の声かけ" ? `${selectedChild.name}さんは今週、学習を続けながら学校のこともよく話していたようです。まずは頑張った過程を、そのまま言葉にして伝えてみるのもよいかもしれません。` : "結果だけでなく、始めたことや続けたことにも目を向けています。気になる話題も、お子さまの気持ちを断定せず、会話のきっかけとしてお伝えします。"}</p><button onClick={() => setSheet(null)}>{sheetIsChildAction ? "閉じる" : "レポートに戻る"}</button></div></BottomSheet>
+    <BottomSheet open={Boolean(sheet)} onOpenChange={(open) => !open && setSheet(null)} title={sheet ?? "詳細"} description={sheetIsChildAction ? "保護者の方が管理する情報です。" : sheetIsVoiceHint ? "今週の様子をもとに、使いやすい声かけ例をまとめました。" : "レポートから分かることを、やさしくまとめています。"} snap={sheetIsVoiceHint ? 0.82 : 0.55}>
+      {sheetIsVoiceHint ? <VoiceHintDetail child={selectedChild} onClose={() => setSheet(null)} /> : <div className="detail-sheet-content">{sheetIsChildAction ? <PersonIcon className="sheet-person-icon" /> : <IconBubble><ReaderIcon /></IconBubble>}<h3>{sheetIsChildAction ? sheet : "取り組みを見つけるヒント"}</h3><p>{sheet === "お子さまを追加" ? "お子さまのプロフィール追加は、次のステップで設定できます。" : sheet?.includes("設定") ? "学年や表示名などのプロフィール情報を確認・変更できます。" : "結果だけでなく、始めたことや続けたことにも目を向けています。気になる話題も、お子さまの気持ちを断定せず、会話のきっかけとしてお伝えします。"}</p><button onClick={() => setSheet(null)}>{sheetIsChildAction ? "閉じる" : "レポートに戻る"}</button></div>}
+    </BottomSheet>
   </div>;
 }
