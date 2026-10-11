@@ -23,13 +23,13 @@
 - Colors and visual tokens: learning remains green, chat remains blue, and the first-action card uses the existing warm yellow hint treatment.
 - Image quality and asset fidelity: the new overview uses the existing Radix pictogram/icon system and does not add placeholder or decorative raster assets. Existing report illustrations remain unchanged.
 - Copy and content: the first instruction is concrete but non-prescriptive, learning and conversation data are shown together, and conversation language remains non-diagnostic.
-- Information architecture: the selected-child landing screen now contains one recommended action, a cross-report summary, both report entry points, and direct time-period shortcuts. Detailed reports remain available through the same period tabs.
+- Information architecture: the selected-child landing screen now contains one recommended action, a cross-report summary, and one clear entry point for each report. Time-period selection is intentionally deferred to the tabs inside each detailed report.
 - Accessibility and interaction: controls retain explicit accessible names and 44px targets; the active summary/learning/chat section is reflected in the persistent three-item bottom navigation.
 
 ## Comparison history
 
 - Earlier state: selecting a child opened the weekly learning report immediately, so parents had to infer the next action and switch sections to discover conversation insights.
-- First redesign pass: added the parent-action card, cross-report summary, both report entry cards, direct period shortcuts, and a summary tab.
+- First redesign pass: added the parent-action card, cross-report summary, both report entry cards, and a summary tab.
 - QA finding: daily learning still displayed a weekly graph, and weekly chat still displayed a monthly total.
 - Fix applied: daily learning now shows subject-level time; weekly chat now shows weekly totals and daily usage bars. Monthly states retain month-level totals and weekly bars.
 - Post-fix evidence: Chrome interaction checks confirm the intended overview → report → period flow and correct selected periods.
@@ -44,7 +44,7 @@
 - [x] Selected-child landing screen combines learning and chat.
 - [x] Parent's first recommended action is shown before analytics.
 - [x] Learning and chat report entry points are visible on the same screen.
-- [x] Direct day/week/month shortcuts work.
+- [x] Period selection is available after opening each detailed report.
 - [x] Persistent summary/learning/chat navigation works.
 - [x] Period-specific content is internally consistent.
 - [x] Runtime, build, and packaging checks pass.

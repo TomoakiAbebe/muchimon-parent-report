@@ -87,7 +87,6 @@ function ChildOverview({ child, openReport, openDetails }: { child: Child; openR
       <p>いつ・どれくらい・何を勉強したかを確認できます。</p>
       <div className="entry-facts"><span><b>52分</b>/日</span><span><b>19〜20時</b>ごろ</span><span><b>3教科</b></span></div>
       <button className="report-entry-action" onClick={() => openReport("learning", "1週間")}>学習レポートを見る<ChevronRightIcon /></button>
-      <div className="period-shortcuts" aria-label="学習レポートの期間"><span>期間から見る</span>{["1日", "1週間", "1か月"].map((item) => <button key={item} onClick={() => openReport("learning", item)}>{item}<ChevronRightIcon /></button>)}</div>
     </section>
 
     <section className="report-card report-entry-card chat-entry-card">
@@ -95,7 +94,6 @@ function ChildOverview({ child, openReport, openDetails }: { child: Child; openR
       <p>よく話しているテーマや、関心の小さな変化を確認できます。</p>
       <div className="entry-facts chat-entry-facts"><span><b>学校 46%</b></span><span><b>20〜21時</b>ごろ</span></div>
       <button className="report-entry-action blue-action" onClick={() => openReport("chat", "1週間")}>おしゃべりレポートを見る<ChevronRightIcon /></button>
-      <div className="period-shortcuts" aria-label="おしゃべりレポートの期間"><span>期間から見る</span>{["1週間", "1か月"].map((item) => <button key={item} onClick={() => openReport("chat", item)}>{item}<ChevronRightIcon /></button>)}</div>
     </section>
 
     <section className="overview-guide" aria-label="レポートの見方"><b>おすすめの見方</b><p>まとめを知る → 気づきを見つける → 声をかける、の順で見ると活用しやすくなります。</p></section>
