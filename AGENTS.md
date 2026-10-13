@@ -15,6 +15,14 @@ Before making substantial visual changes, use the Product Design plugin's `get-c
 - All app-owned screens use one smartphone-first sizing system: 16px horizontal margins, 12px-or-larger body copy, and at least 44px touch targets. Dense report sections should scroll vertically instead of shrinking text into desktop-style multi-column layouts.
 - After selecting a child, open a child-specific summary dashboard before any single report. Lead with a concrete parent action, show learning and chat highlights together, and offer one clear link to each report. Keep period selection inside the detailed report rather than on the summary dashboard.
 - Voice-prompt details open in a tall, phone-scoped bottom sheet. The detail content scrolls vertically, and the return action stays easy to reach while reading.
+- Each child card's settings button opens a phone-scoped management sheet for subscription/payment details, password changes, report access, and the guardian account withdrawal flow. Adding a child uses a separate ID-and-password form with inline validation.
+- All app popups use centered modal overlays rather than bottom sheets. Modal content scrolls internally, and text-entry modals resize and compact their nonessential content above the simulated keyboard.
+- After selecting a child, the landing page is titled `今週の声かけ`. It contains direct entry points to the learning and chat detail reports. Child-report screens do not use a persistent footer; detail reports return to `今週の声かけ` through the header back button.
+- Voice-prompt content appears only on the `今週の声かけ` landing page and its overlay. Learning and chat detail reports do not repeat voice-prompt cards or links.
+- The `今週の声かけ` landing page fits within one standard smartphone viewport without scrolling. Its weekly summary owns the learning and chat detail-report buttons; do not add a separate detail-report section below it.
+- The `今週の声かけ` landing page is a fixed, non-scrollable screen. Use its remaining lower space for a compact seven-day usage-time bar chart, while detailed reports remain vertically scrollable.
+- The fixed landing-page section order is: `今週の利用時間`, `今週はこんな声かけから`, then `今週のまとめ`.
+- Each child card's settings button opens a phone-scoped management sheet for subscription/payment details, password changes, report access, and the guardian account withdrawal flow. Adding a child uses a separate ID-and-password form with inline validation.
 - Detailed reports stay requirement-led: learning shows only the metrics, inferred subjects/units, period-specific focus or change, and voice prompts defined for that period; chat uses only overview, topic/usage data, qualitative changes, and voice prompts. Do not add progress charts, unit maps, scores, comparisons with other children, or diagnostic language unless requirements change.
 
 When implementing from a selected generated mock, treat that image as the source of truth for layout, component anatomy, density, spacing, color, typography, visible content, and hierarchy.
@@ -69,6 +77,14 @@ Call `keyboard.hide()` before:
 When a composer, search surface, or other keyboard-attached component closes, call `keyboard.hide()` in the same event before changing that component's open state. Position attached surfaces from `useKeyboardInsets()` rather than a separate timer or visibility flag so both dismiss together.
 
 When any text-entry control loses focus, dismiss the simulated keyboard. If the control is custom or does not use the runtime's keyboard-aware fields, handle its blur event and call `keyboard.hide()` explicitly. Keep the keyboard open only when focus is moving directly to another text-entry control that should share the same keyboard session.
+
+The prototype starts at the guardian login screen. Login remains intentionally permissive for UI review: pressing `ログイン` without credentials opens the child list. Registration and password-reset screens are frontend-only flows and must continue to use the runtime keyboard-aware fields.
+
+Responsive behavior is app-owned CSS layered around the protected mobile runtime. Preserve the existing single-column composition for iPhone and Pixel, use a two-column composition for the iPad preview, and show the persistent 250px guardian sidebar for the PC preview. Do not modify protected runtime files to add tablet or desktop layouts.
+
+The app-owned preview picker is the single visible device selector. It offers iPhone, Pixel 10, iPad (1024 × 768), and PC (1366 × 768). Keep the protected runtime picker hidden rather than editing it. Large virtual canvases are scaled to the available browser area and use `preview-ipad` / `preview-pc` classes for their internal compositions.
+
+Authenticated iPad headers keep a visible back button: the weekly overview returns to the child-selection screen, while detailed reports return to the weekly overview. Voice-prompt overlays are device-sized rather than phone-sized: use a 720px, two-column card on iPad and a 920px, three-column card on PC, with internal scrolling for overflow.
 
 ## Interaction Rules
 
