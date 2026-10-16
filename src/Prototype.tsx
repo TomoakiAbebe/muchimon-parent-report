@@ -12,13 +12,13 @@ type Child = {
   name: string;
   grade: string;
   tone: "yellow" | "blue";
-  learningDays: number;
-  chatSummary: string;
+  streakDays: number;
+  activeDays: number;
 };
 
 const children: Child[] = [
-  { id: "ai", name: "あい", grade: "小学3年生", tone: "yellow", learningDays: 5, chatSummary: "学校の話題が\n多く見られました" },
-  { id: "makoto", name: "まこと", grade: "小学1年生", tone: "blue", learningDays: 3, chatSummary: "好きな遊びの話が\n増えてきたようです" },
+  { id: "ai", name: "あい", grade: "小学3年生", tone: "yellow", streakDays: 12, activeDays: 5 },
+  { id: "makoto", name: "まこと", grade: "小学1年生", tone: "blue", streakDays: 4, activeDays: 4 },
 ];
 
 function AppModal({ open, onOpenChange, title, description, children }: PropsWithChildren<{ open: boolean; onOpenChange: (open: boolean) => void; title: string; description?: string }>) {
@@ -59,6 +59,42 @@ function CardTitle({ icon, title, action, onAction }: { icon: React.ReactNode; t
 
 function ChildPictogram({ tone, compact = false }: { tone: Child["tone"] | "green"; compact?: boolean }) {
   return <span className={`child-pictogram ${tone}${compact ? " compact" : ""}`} aria-hidden="true"><PersonIcon /></span>;
+}
+
+function StreakWidget({ child }: { child: Child }) {
+  const days = ["月", "火", "水", "木", "金", "土", "日"];
+  return <div className="child-streak" aria-label={`${child.streakDays}日連続で取り組んでいます`}>
+    <div className="streak-summary"><span className="streak-icon"><LightningBoltIcon /></span><span><small>連続記録</small><strong>{child.streakDays}<em>日</em></strong></span><b>継続中</b></div>
+    <div className="streak-week" aria-label="今週の取り組み状況">{days.map((day, index) => <span className={index < child.activeDays ? "done" : ""} key={day}><i>{index < child.activeDays ? <CheckCircledIcon /> : null}</i><small>{day}</small></span>)}</div>
+  </div>;
+}
+
+function StreakCalendar({ child, onClose }: { child: Child; onClose: () => void }) {
+  const [monthIndex, setMonthIndex] = useState(0);
+  const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
+  const months = [
+    { year: 2026, month: 4, days: 30, offset: 3, active: Array.from({ length: child.streakDays }, (_, index) => 20 - index), today: 20 },
+    { year: 2026, month: 3, days: 31, offset: 0, active: [2, 3, 6, 7, 8, 12, 13, 18, 21, 22, 26, 27], today: null },
+    { year: 2026, month: 2, days: 28, offset: 0, active: [1, 4, 5, 9, 10, 14, 17, 22, 23], today: null },
+  ];
+  const selectedMonth = months[monthIndex];
+  const days = Array.from({ length: selectedMonth.days }, (_, index) => index + 1);
+  const activeDays = new Set(selectedMonth.active);
+  return <div className="streak-calendar-detail">
+    <div className="streak-calendar-hero"><span><LightningBoltIcon /></span><div><small>現在の連続記録</small><strong>{child.streakDays}<em>日連続</em></strong></div><b>自己ベスト更新中</b></div>
+    <div className="streak-calendar-heading"><div><small>{selectedMonth.year}年</small><h3>{selectedMonth.month}月</h3></div><p>色のついた日が取り組んだ日です</p></div>
+    <div className="month-calendar" aria-label={`${selectedMonth.year}年${selectedMonth.month}月の取り組みカレンダー`}>
+      {weekdays.map((day) => <span className="calendar-weekday" key={day}>{day}</span>)}
+      {Array.from({ length: selectedMonth.offset }, (_, index) => <span className="calendar-empty" key={`empty-${index}`} />)}
+      {days.map((day) => <span className={`calendar-day${activeDays.has(day) ? " active" : ""}${day === selectedMonth.today ? " today" : ""}`} key={day}><b>{day}</b>{activeDays.has(day) ? <CheckCircledIcon /> : null}</span>)}
+    </div>
+    <div className="calendar-month-actions">
+      <button onClick={() => setMonthIndex((index) => Math.min(index + 1, months.length - 1))} disabled={monthIndex === months.length - 1}><ChevronLeftIcon />前の月を見る</button>
+      {monthIndex > 0 ? <button onClick={() => setMonthIndex((index) => Math.max(index - 1, 0))}>次の月を見る<ChevronRightIcon /></button> : null}
+    </div>
+    <div className="streak-calendar-note"><CheckCircledIcon /><p><b>毎日の小さな積み重ねが続いています</b><span>結果だけでなく、続けて取り組んだことも声かけのきっかけにできます。</span></p></div>
+    <button className="streak-calendar-close" onClick={onClose}>今週の声かけに戻る</button>
+  </div>;
 }
 
 function AuthScreen({ view, onNavigate, onLogin }: { view: "login" | "register" | "reset"; onNavigate: (view: "login" | "register" | "reset") => void; onLogin: () => void }) {
@@ -115,9 +151,10 @@ function ChildrenScreen({ onSelect, onManage, openAddChild, onLogout }: { onSele
             <button className="child-settings" aria-label={`${child.name}の設定`} onClick={(event) => { event.stopPropagation(); onManage(child); }}><GearIcon /></button>
             <div className="child-card-main">
               <div className="child-portrait"><ChildPictogram tone={child.tone} /></div>
-              <div className="child-profile"><h2>{child.name}</h2><p>{child.grade}</p><div className={`child-highlight ${child.id === "ai" ? "learning" : "chatting"}`}>{child.id === "ai" ? <BarChartIcon /> : <ChatBubbleIcon />}<span>{child.id === "ai" ? <>今週 <strong>{child.learningDays}日</strong><br />取り組みました</> : <><strong>学校の話題が</strong><br />多く見られました</>}</span><ChevronRightIcon /></div></div>
+              <div className="child-profile"><h2>{child.name}</h2><p>{child.grade}</p><span className="child-card-status"><LightningBoltIcon />今日も継続中</span></div>
             </div>
-            <button className="view-report-button" onClick={() => onSelect(child)}>今週の声かけを見る<ChevronRightIcon /></button>
+            <StreakWidget child={child} />
+            <button className="view-report-button" onClick={() => onSelect(child)}>詳しく見る<ChevronRightIcon /></button>
           </article>)}
         </div>
         <button className="add-child-button" onClick={openAddChild}><span><PlusIcon /></span>お子さまを追加</button>
@@ -180,32 +217,37 @@ function AddChildSheet({ onClose }: { onClose: () => void }) {
   </div>;
 }
 
-function WeeklyUsageChart() {
-  const usage = [{ day: "月", minutes: 35 }, { day: "火", minutes: 48 }, { day: "水", minutes: 62 }, { day: "木", minutes: 45 }, { day: "金", minutes: 58 }, { day: "土", minutes: 72 }, { day: "日", minutes: 44 }];
-  return <section className="report-card weekly-usage-card" aria-labelledby="weekly-usage-title">
-    <div className="weekly-usage-heading"><div><IconBubble><BarChartIcon /></IconBubble><div><span>学習・おしゃべり</span><h2 id="weekly-usage-title">今週の利用時間</h2></div></div><strong>合計 6.1時間</strong></div>
-    <div className="weekly-usage-chart" aria-label="月曜日35分、火曜日48分、水曜日62分、木曜日45分、金曜日58分、土曜日72分、日曜日44分">
-      {usage.map((item) => <div className="usage-bar-item" key={item.day}><span>{item.minutes}分</span><i style={{ height: `${Math.round(item.minutes * .62)}px` }} /><b>{item.day}</b></div>)}
-    </div>
-  </section>;
-}
-
 function ChildOverview({ child, openReport, openDetails }: { child: Child; openReport: (mode: Mode, period: string) => void; openDetails: (kind: string) => void }) {
   const isAi = child.id === "ai";
+  const featuredPrompt = isAi
+    ? "今週、算数の「分数のたし算」に4回も取り組んでいたね。続けていてすごいね！"
+    : "今週、国語の音読を3日続けていたね。よく頑張っていたね！";
   return <div className="child-overview-stack" data-testid="child-overview-screen">
-    <WeeklyUsageChart />
+    <button className="report-card overview-streak-card" onClick={() => openDetails("連続記録")} aria-label={`${child.streakDays}日連続の1か月カレンダーを見る`}>
+      <StreakWidget child={child} />
+      <span className="overview-streak-more">1か月を見る<ChevronRightIcon /></span>
+    </button>
     <section className="report-card parent-next-card">
       <div className="parent-next-heading"><IconBubble tone="yellow"><LightningBoltIcon /></IconBubble><div><span>まずはこちら</span><h2>今週はこんな声かけから</h2></div></div>
       <p>{child.name}さんの頑張りと興味をもとに、今日から使える声かけを選びました。</p>
-      <div className="weekly-prompt-preview"><small>続けたことを伝える</small><strong>「今週もよく続けていたね」</strong></div>
+      <div className="overview-key-points" aria-label="詳しく見るで確認できる今週の要点">
+        <div><ReaderIcon /><span><small>学習の要点</small><b>{isAi ? "分数のたし算・4回" : "国語の音読・3日"}</b></span></div>
+        <div><ChatBubbleIcon /><span><small>おしゃべりの要点</small><b>{isAi ? "学校・友だちの話題" : "好きな遊びの話題"}</b></span></div>
+      </div>
+      <div className="weekly-prompt-preview"><small><ReaderIcon />学習から・続けたことを褒める</small><strong>「{featuredPrompt}」</strong></div>
+      <div className="prompt-detail-points" aria-label="声かけ例の詳細で確認できること">
+        <span><CheckCircledIcon />今週に見られたこと</span>
+        <span><CheckCircledIcon />学習・おしゃべり別の声かけ</span>
+        <span><CheckCircledIcon />伝えるときのポイント</span>
+      </div>
       <button className="parent-next-action" onClick={() => openDetails("今週の声かけ")}>声かけ例を詳しく見る<ChevronRightIcon /></button>
     </section>
 
-    <section className="report-card combined-summary-card">
+    <section className="report-card combined-summary-card compact-summary-card">
       <div className="overview-section-heading"><div><span>学習とおしゃべり</span><h2>今週のまとめ</h2></div><small>4/14〜4/20</small></div>
       <div className="combined-summary-grid">
-        <article className="summary-panel learning-panel"><div className="summary-panel-title"><IconBubble><ReaderIcon /></IconBubble><span>学習</span></div><div className="summary-panel-copy"><strong>{child.learningDays}日</strong><small>平均52分/日</small><p>{isAi ? "算数を中心に3教科" : "国語を中心に継続"}</p></div><button className="summary-detail-action" onClick={() => openReport("learning", "1週間")}>詳細を見る<ChevronRightIcon /></button></article>
-        <article className="summary-panel chat-panel"><div className="summary-panel-title"><IconBubble tone="blue"><ChatBubbleIcon /></IconBubble><span>おしゃべり</span></div><div className="summary-panel-copy"><strong>{isAi ? "学校 46%" : "遊びの話題"}</strong><small>20〜21時ごろ</small><p>{isAi ? "友だちや将来の話も増えました" : "好きな遊びの話が増えました"}</p></div><button className="summary-detail-action blue" onClick={() => openReport("chat", "1週間")}>詳細を見る<ChevronRightIcon /></button></article>
+        <article className="summary-panel learning-panel"><div className="summary-panel-title"><IconBubble><ReaderIcon /></IconBubble><span>学習</span></div><button className="summary-detail-action" onClick={() => openReport("learning", "1週間")}>詳細を見る<ChevronRightIcon /></button></article>
+        <article className="summary-panel chat-panel"><div className="summary-panel-title"><IconBubble tone="blue"><ChatBubbleIcon /></IconBubble><span>おしゃべり</span></div><button className="summary-detail-action blue" onClick={() => openReport("chat", "1週間")}>詳細を見る<ChevronRightIcon /></button></article>
       </div>
     </section>
   </div>;
@@ -286,6 +328,18 @@ function VoiceHintDetail({ child, mode, period, combined, onClose }: { child: Ch
   const periodLabel = period === "1日" ? "今日" : period === "1か月" ? "今月" : "今週";
   const learningObservation = period === "1日" ? "3教科の教材に取り組んだ様子が見られました。" : period === "1か月" ? "先月より学習時間が増え、算数に続けて取り組む日も増えたようです。" : isAi ? "5日間、算数を中心に3教科へ取り組んだようです。" : "3日間、国語を中心に続けて取り組む様子が見られました。";
   const chatObservation = period === "1か月" ? "前月と比べて、友だちや将来について話す場面が少し増えた様子があります。" : isAi ? "学校の話題が多く、友だちや将来の話も少し増えた様子があります。" : "好きな遊びについて、楽しそうに話す場面が増えたようです。";
+  const learningPrompt = period === "1日"
+    ? "今日は算数・国語・理科の3教科に取り組んでいたね。いろいろ挑戦していてすごいね！"
+    : period === "1か月"
+      ? "今月は先月より学習する時間が増えていたね。算数も続けていて頑張っていたね！"
+      : isAi
+        ? "今週、算数の「分数のたし算」に4回も取り組んでいたね。続けていてすごいね！"
+        : "今週、国語の音読を3日続けていたね。よく頑張っていたね！";
+  const chatPrompt = period === "1か月"
+    ? "最近、友だちや将来のことをよく話しているみたいだね。今いちばん気になっていることはある？"
+    : isAi
+      ? "最近、学校で友だちといて楽しかったことはあった？"
+      : "最近、好きな遊びでいちばん楽しかったことは何？";
   return <div className="detail-sheet-content voice-hint-detail">
     <div className="voice-hint-intro">
       <IconBubble tone="yellow"><LightningBoltIcon /></IconBubble>
@@ -301,8 +355,10 @@ function VoiceHintDetail({ child, mode, period, combined, onClose }: { child: Ch
 
     <section className="voice-hint-section" aria-labelledby="voice-hint-examples">
       <div className="voice-hint-section-title"><span>2</span><h4 id="voice-hint-examples">声かけの例</h4></div>
-      {combined || mode === "learning" ? <><div className="voice-hint-example"><small>続けたことを伝える</small><p>「{periodLabel}もよく続けていたね」</p></div><div className="voice-hint-example"><small>取り組みを具体的に伝える</small><p>「{period === "1日" ? "今日は、いろいろな教科に取り組んでいたね" : isAi ? "算数に何度も取り組んでいたね" : "国語を続けていたね"}」</p></div></> : null}
-      {combined || mode === "chat" ? <div className="voice-hint-example"><small>興味を会話につなげる</small><p>「最近、{isAi ? "学校ではどんなことが楽しい？" : "どんな遊びが楽しい？"}」</p></div> : null}
+      <div className="voice-hint-example-groups">
+        {combined || mode === "learning" ? <article className="voice-hint-example-group learning-example-group"><header><ReaderIcon /><div><b>学習</b><small>続けたことを褒める</small></div></header><p>「{learningPrompt}」</p></article> : null}
+        {combined || mode === "chat" ? <article className="voice-hint-example-group chat-example-group"><header><ChatBubbleIcon /><div><b>おしゃべり</b><small>興味を知る</small></div></header><p>「{chatPrompt}」</p></article> : null}
+      </div>
     </section>
 
     <section className="voice-hint-section voice-hint-points" aria-labelledby="voice-hint-points">
@@ -337,6 +393,7 @@ export default function Prototype() {
   const navigateAuth = (nextView: "login" | "register" | "reset") => { keyboard.hide(); setView(nextView); window.history.replaceState(null, "", `#${nextView}`); };
   const sheetIsChildAction = sheet === "お子さまの管理" || sheet === "お子さまを追加";
   const sheetIsVoiceHint = sheet === "今週の声かけ";
+  const sheetIsStreak = sheet === "連続記録";
   const sheetPeriodLabel = "今週";
   const isAuthenticatedView = view === "children" || view === "overview" || view === "report";
 
@@ -354,11 +411,11 @@ export default function Prototype() {
       <button className="desktop-logout" onClick={logout}><ExitIcon />ログアウト</button>
     </aside> : null}
     {view === "login" || view === "register" || view === "reset" ? <AuthScreen view={view} onNavigate={navigateAuth} onLogin={returnToChildren} /> : view === "children" ? <ChildrenScreen onSelect={openOverview} onManage={(child) => { setManagedChild(child); setSettingsStage("menu"); setSheet("お子さまの管理"); }} openAddChild={() => setSheet("お子さまを追加")} onLogout={logout} /> : <>
-      <header className={`app-header ${view === "overview" ? "overview-app-header" : ""}`}><button className="back-button" aria-label={view === "overview" ? "お子さま一覧に戻る" : "今週の声かけに戻る"} onClick={view === "overview" ? returnToChildren : returnToOverview}><ChevronLeftIcon /></button><div className="page-heading">{view === "report" && mode === "learning" ? <IconBubble><ReaderIcon /></IconBubble> : view === "overview" ? <ChildPictogram tone={selectedChild.tone} compact /> : null}<div><span className="report-child-name">{selectedChild.name}さん</span><h1>{view === "overview" ? "今週の声かけ" : mode === "learning" ? "学習レポート" : "おしゃべりレポート"}</h1></div></div>{view === "report" ? <Segments items={periodItems} value={period} onChange={setPeriod} /> : null}</header>
+      <header className={`app-header ${view === "overview" ? "overview-app-header" : ""}`}><button className="back-button" aria-label={view === "overview" ? "お子さま一覧に戻る" : "今週の声かけに戻る"} onClick={view === "overview" ? returnToChildren : returnToOverview}><ChevronLeftIcon /></button><div className={`page-heading${view === "overview" ? " overview-name-only" : ""}`}>{view === "report" && mode === "learning" ? <IconBubble><ReaderIcon /></IconBubble> : null}{view === "overview" ? <strong className="overview-child-name">{selectedChild.name}さん</strong> : <div className="page-heading-copy"><span className="report-child-name">{selectedChild.name}さん</span><h1>{mode === "learning" ? "学習レポート" : "おしゃべりレポート"}</h1></div>}</div>{view === "report" ? <Segments items={periodItems} value={period} onChange={setPeriod} /> : null}</header>
       {view === "overview" ? <main className="screen-content overview-fixed-content" data-testid="report-screen"><ChildOverview child={selectedChild} openReport={openReport} openDetails={setSheet} /></main> : <MobileScroll key={`${selectedChild.id}-${view}-${mode}-${period}`} className="report-scroll"><main className="screen-content" data-testid="report-screen">{mode === "learning" ? <LearningReport period={period} child={selectedChild} /> : <ChatReport period={period} />}</main></MobileScroll>}
     </>}
-    <AppModal open={Boolean(sheet)} onOpenChange={(open) => { if (!open) { keyboard.hide(); setSheet(null); setSettingsStage("menu"); } }} title={sheet ?? "詳細"} description={sheetIsChildAction ? "保護者の方が管理する情報です。" : sheetIsVoiceHint ? `${sheetPeriodLabel}の様子をもとに、使いやすい声かけ例をまとめました。` : "レポートから分かることを、やさしくまとめています。"}>
-      {sheetIsVoiceHint ? <VoiceHintDetail child={selectedChild} mode={mode} period="1週間" combined onClose={() => setSheet(null)} /> : sheet === "お子さまの管理" ? <ChildSettingsSheet child={managedChild} stage={settingsStage} setStage={setSettingsStage} onOpenReport={() => { setSheet(null); openOverview(managedChild); }} onClose={() => setSheet(null)} /> : sheet === "お子さまを追加" ? <AddChildSheet onClose={() => setSheet(null)} /> : <div className="detail-sheet-content"><IconBubble><ReaderIcon /></IconBubble><h3>取り組みを見つけるヒント</h3><p>結果だけでなく、始めたことや続けたことにも目を向けています。気になる話題も、お子さまの気持ちを断定せず、会話のきっかけとしてお伝えします。</p><button onClick={() => setSheet(null)}>レポートに戻る</button></div>}
+    <AppModal open={Boolean(sheet)} onOpenChange={(open) => { if (!open) { keyboard.hide(); setSheet(null); setSettingsStage("menu"); } }} title={sheet ?? "詳細"} description={sheetIsChildAction ? "保護者の方が管理する情報です。" : sheetIsVoiceHint ? `${sheetPeriodLabel}の様子をもとに、使いやすい声かけ例をまとめました。` : sheetIsStreak ? `${selectedChild.name}さんの1か月の取り組みを確認できます。` : "レポートから分かることを、やさしくまとめています。"}>
+      {sheetIsStreak ? <StreakCalendar child={selectedChild} onClose={() => setSheet(null)} /> : sheetIsVoiceHint ? <VoiceHintDetail child={selectedChild} mode={mode} period="1週間" combined onClose={() => setSheet(null)} /> : sheet === "お子さまの管理" ? <ChildSettingsSheet child={managedChild} stage={settingsStage} setStage={setSettingsStage} onOpenReport={() => { setSheet(null); openOverview(managedChild); }} onClose={() => setSheet(null)} /> : sheet === "お子さまを追加" ? <AddChildSheet onClose={() => setSheet(null)} /> : <div className="detail-sheet-content"><IconBubble><ReaderIcon /></IconBubble><h3>取り組みを見つけるヒント</h3><p>結果だけでなく、始めたことや続けたことにも目を向けています。気になる話題も、お子さまの気持ちを断定せず、会話のきっかけとしてお伝えします。</p><button onClick={() => setSheet(null)}>レポートに戻る</button></div>}
     </AppModal>
   </div>;
 }

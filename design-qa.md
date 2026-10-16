@@ -62,6 +62,205 @@
 
 final result: passed
 
+## 2026-10-16 — Cross-device icon centering audit
+
+- source visual truth path: Current approved prototype and the user's requirement that icons remain centered on every page and device.
+- implementation screenshot path: Browser-rendered evidence captured from `http://127.0.0.1:5205/#overview`; responsive states were also inspected live in the in-app browser.
+- viewport: iPhone 393 × 852, Pixel 10 412 × 915, iPad 1024 × 768, and PC 1366 × 768 virtual previews.
+- state coverage: overview, learning report, chat report, child selection, login, registration, password reset, voice-prompt overlay, streak calendar overlay, and child settings overlay.
+- full-view comparison evidence: The post-fix overview screenshot shows the leading lightning icon, report summary icons, and trailing action icons centered within their containers.
+- focused region comparison evidence: Automated rectangle-center checks compared each visible direct SVG against its shared icon container. All 28 page/device combinations and 12 modal/device combinations completed with zero offsets above the 1px tolerance.
+- findings and fixes: Heading-label and metric-label selectors were unintentionally matching shared `.icon-bubble` spans and changing their centering layout to `display:block`. Both selectors were narrowed to their text wrappers, restoring the shared grid centering behavior.
+- fonts and typography: Unchanged.
+- spacing and layout rhythm: Icon container sizes and surrounding spacing are unchanged; only internal centering behavior was corrected.
+- colors and visual tokens: Unchanged.
+- image quality and asset fidelity: Existing vector icons are preserved.
+- copy and content: Unchanged.
+- accessibility limits: Geometry and visible states were checked; screenshots alone do not establish full assistive-technology compliance.
+- final findings: No actionable P0, P1, or P2 icon-alignment issues remain in the checked states.
+
+final result: passed
+
+## 2026-10-16 — Voice-prompt overlay single-column check
+
+- source visual truth path: User-approved voice-prompt overlay plus the explicit request that sections 1, 2, and 3 stack vertically on iPad and PC.
+- implementation screenshot path: Browser-rendered implementation inspected at `http://127.0.0.1:5203/#overview` in the in-app browser; evidence was captured through live DOM geometry because this change is a responsive layout rule rather than an image-fidelity revision.
+- viewport: iPad 1024 × 768 and PC 1366 × 768 virtual previews.
+- source and implementation pixel dimensions, CSS size, and density normalization used: Source requirement is structural and has no raster dimensions. Implementation was inspected in the app's calibrated iPad and PC preview modes; surrounding preview scaling was excluded by comparing the modal content's computed layout and section rectangles.
+- state: `今週の声かけ` → `声かけ例を詳しく見る` overlay open.
+- full-view comparison evidence: Both large-screen variants render `.voice-hint-detail` as `display: block`; numbered sections share the same left position and width and appear in strictly increasing top order (1 → 2 → 3).
+- focused region comparison evidence: iPad section top positions were 232, 312, and 413; PC positions were 266, 326, and 402. No horizontal overlap or side-by-side track remains. Modal close action remained available.
+- fonts and typography: Existing type family, weights, sizes, and hierarchy are preserved. The wider single-column measure removes the excessive line wrapping identified by the user.
+- spacing and layout rhythm: Sections use a consistent 16px vertical gap and a centered readable content width on iPad and PC.
+- colors and visual tokens: Existing semantic colors and card surfaces are unchanged.
+- image quality and asset fidelity: No imagery or icon assets were changed.
+- copy and content: All existing wording and the numbered 1/2/3 order are unchanged.
+- findings: No actionable P0, P1, or P2 issues remain for the requested layout change.
+- comparison history: Earlier large-screen CSS used two columns on iPad and three columns on PC, splitting the numbered sequence horizontally. It was replaced with one centered block flow; the post-fix browser geometry confirms the sections now stack vertically at both breakpoints.
+- primary interactions tested: Open detail overlay, read sections in order, close with `レポートに戻る`, switch between iPad and PC previews.
+- console errors checked: No runtime or build errors were reported during the verified flow.
+
+final result: passed
+
+## iPad and PC overview density redesign
+
+- Source visual truth: the approved phone overview plus the request to remove excess whitespace specifically on iPad and PC.
+- Rendered implementation: `http://127.0.0.1:5202/#overview`, verified in the in-app browser on tabs 52 and 53.
+- Viewports: iPhone `393 × 852`, iPad `1024 × 768`, and PC `1366 × 768`, CSS density 1 inside the virtual-device runtime.
+- State: selected-child weekly overview with no overlay open.
+- Full-view comparison: iPad/PC now use a full-width 152px continuity bar above a lower two-column layout. The voice-prompt card occupies the wider left column, while the weekly-summary card occupies the narrower right column.
+- Focused comparison: iPad columns measured `623px / 321px`; PC content columns measured `652px / 320px`. The lower cards each measured 444px high, removing the prior tall sparse left/right stack.
+- Continuity density: the streak total and weekday row share one horizontal line, with `1か月を見る` separated as a right-side action instead of leaving unused vertical space.
+- Weekly-summary density: learning and chat are equal-height action rows with larger icons and report buttons, filling the narrow column without reintroducing deleted metrics.
+- Fonts and typography: existing desktop/tablet type sizes and hierarchy are retained; action labels remain single-line.
+- Spacing and layout rhythm: every iPad/PC section has matching `clientWidth`/`scrollWidth` and `clientHeight`/`scrollHeight`, confirming no clipping or internal overflow.
+- Colors and visual tokens: existing continuity yellow, learning green, and chat blue remain unchanged.
+- Image and icon fidelity: existing Radix icons and pictograms are retained; no new assets were required.
+- iPhone regression check: the phone keeps its vertical 20/50/30 stack, and all three sections still match their allocated heights without overflow.
+- No actionable P0, P1, or P2 issue remains.
+
+final result: passed
+
+## Compact selected-child header
+
+- Source visual truth: the current iPhone overview plus the request to reduce camera-area pressure by showing only the selected child's name.
+- Rendered implementation: `http://127.0.0.1:5201/#overview`, verified in the in-app browser on tab 50.
+- Viewport: iPhone `393 × 852`, CSS density 1 inside the virtual-device runtime.
+- State: selected-child weekly overview and weekly learning report.
+- Full-view comparison: the overview header now contains only the back control and `あいさん`; the pictogram, continuity count, and `今週の声かけ` title were removed from the header.
+- Focused comparison: the overview header was reduced from 105px to 88px. Its measured `clientHeight` and `scrollHeight` both equal 88px, and the child name remains centered without clipping.
+- Detailed reports: header continuity text was removed there as well. The learning header contains only `あいさん`, the report title, and period tabs; `scrollWidth` matches `clientWidth` at 393px.
+- Fonts and typography: the selected child name uses a single 18px label with no competing secondary metadata.
+- Spacing and layout rhythm: the compact header adds vertical breathing room above the first content card while preserving the 44px back target.
+- Colors and visual tokens: existing ink and pale-blue header treatments are unchanged.
+- Image and icon fidelity: no new assets were introduced; the redundant header pictogram was intentionally removed.
+- Copy/content: `12日連続` and `今週の声かけ` no longer appear in the overview header; continuity remains available in the main continuity section.
+- No actionable P0, P1, or P2 issue remains.
+
+final result: passed
+
+## Revised continuity and weekly-summary proportions
+
+- Source visual truth: the approved three-section weekly overview and the requested `20% / 50% / 30%` phone hierarchy.
+- Rendered implementation: `http://127.0.0.1:5200/#overview`, verified in the in-app browser on tabs 47 and 48.
+- Viewports: iPhone `393 × 852`, iPad `1024 × 768`, and PC `1366 × 768`, CSS density 1 inside the virtual-device runtime.
+- State: selected-child weekly overview, April calendar overlay, and navigated March calendar state.
+- Full-view comparison: phone rows measured `141px / 352.5px / 211.5px`, matching the requested 20% / 50% / 30% proportions after gaps.
+- Focused comparison: `1か月を見る` is anchored to the bottom of the continuity card with a measured 5px bottom inset. All three phone sections have matching `clientHeight` and `scrollHeight`.
+- Weekly-summary content: removed `5日`, `分数のたし算`, `学校46%`, and `友だちの話題`; the section now contains only the learning/chat labels and their respective detail actions.
+- Calendar navigation: `前の月を見る` changes April to March and exposes `次の月を見る` for returning toward the current month. The calendar accessible label updates with the selected year and month.
+- Fonts and typography: retained the existing hierarchy; reduced summary content improves scan speed without shrinking action labels.
+- Spacing and layout rhythm: the smaller continuity section keeps its navigation at the bottom; the larger weekly-summary allocation gives both report actions comfortable touch space.
+- Colors and visual tokens: existing yellow continuity, green learning, and blue chat treatments remain unchanged.
+- Image and icon fidelity: existing Radix iconography is retained; no new image assets were required.
+- Responsive evidence: iPad and PC retained the optimized left-stack/right-feature composition, with every section matching its allocated height and no overflow.
+- No actionable P0, P1, or P2 issue remains.
+
+final result: passed
+
+## Three-section weekly overview and monthly continuity calendar
+
+- Source visual truth: the approved local weekly-overview design, the approved Duolingo-inspired continuity widget, and the requested `25% / 50% / 25%` phone hierarchy.
+- Rendered implementation: `http://127.0.0.1:5199/#overview`, verified in the in-app browser on tabs 44 and 45.
+- Viewports: iPhone `393 × 852`, iPad `1024 × 768`, and PC `1366 × 768`, CSS density 1 inside the virtual-device runtime.
+- State: selected-child `今週の声かけ` screen and open `連続記録` monthly-calendar overlay.
+- Full-view comparison: the phone layout now follows `連続記録` → `まずはこちら` → `今週のまとめ`; computed rows were exactly `176.25px / 352.5px / 176.25px`.
+- Focused comparison: all three phone sections reported matching `clientHeight` and `scrollHeight`, so no content is clipped inside the fixed, non-scrolling overview.
+- Responsive structure: iPad uses a `368px / 576px` split and PC uses a `324px / 648px` split. The voice-prompt card spans both rows in the larger right column; continuity and the compact weekly summary stack on the left.
+- Fonts and typography: preserved the existing hierarchy and reduced only supporting summary text; primary section titles and action labels remain readable.
+- Spacing and layout rhythm: the continuity and summary sections each occupy the smaller visual tier while the voice-prompt section remains dominant. All large-screen cards matched their allocated heights without overflow.
+- Colors and visual tokens: reused the existing yellow continuity, green learning, and blue chat tokens.
+- Image and icon fidelity: reused the existing pictograms and Radix icons; the monthly calendar introduces no unsupported illustration or placeholder asset.
+- Copy/content: the compact weekly summary now shows one key learning value and one key conversation value before each `詳細を見る` action.
+- Interaction: tapping continuity opens a centered one-month calendar overlay. The overlay shows the current streak, highlighted activity days, today's outline, supportive explanatory copy, and a return action; its content fits without outer modal overflow.
+- No actionable P0, P1, or P2 issue remains.
+
+final result: passed
+
+## Balanced continuity cards and report-header visibility
+
+- Source visual truth: the supplied child-selection screenshot plus the previously approved continuity-widget direction.
+- Rendered implementation: `http://127.0.0.1:5197/#children`, verified in the in-app browser on tabs 39 and 40.
+- Viewports: iPhone `393 × 852`, iPad `1024 × 768`, and PC `1366 × 768`, CSS density 1 inside the virtual-device runtime.
+- State: authenticated child-selection screen, selected-child weekly overview, and weekly learning detail report.
+- Full-view comparison: rebalanced each child card into a clear profile row, full-width continuity row, and full-width report action. The portrait and identity no longer compete with the seven-day widget for the same narrow column.
+- Focused comparison: iPhone cards measured `359 × 310px`, with a `325px` continuity widget and no horizontal overflow. iPad/PC cards measured `467 × 309px`, with the widget using a balanced `128px / 245px` two-column layout and matching `clientWidth`/`scrollWidth` of `421px`.
+- Fonts and typography: retained the existing type hierarchy; the child's name remains primary, while `今日も継続中`, consecutive days, and weekday labels form a compact secondary hierarchy.
+- Spacing and layout rhythm: portrait, identity, continuity block, and CTA now use consistent full-card alignment and equal card heights for both children.
+- Colors and visual tokens: retained each child's yellow/blue tone in status and activity states without changing the green primary CTA.
+- Image and icon fidelity: retained the existing pictograms and Radix icons; no substitute illustrations or unsupported assets were introduced.
+- Copy/content: the approved consecutive-day values remain unchanged. `12日連続` or `4日連続` now also appears in the selected child's header.
+- Detail visibility: the consecutive-day badge was verified on `今週の声かけ` and on the learning detail report; both headers measured `scrollWidth === clientWidth` with no clipping.
+- Responsive evidence: iPhone, iPad, and PC child cards passed visual and overflow checks. Primary card selection and report navigation remained functional.
+- No actionable P0, P1, or P2 issue remains.
+
+final result: passed
+
+## Child-card continuity widget
+
+- Source visual truth: `/var/folders/0w/s4_nytxd0q94jk4yxg6d3n780000gn/T/TemporaryItems/NSIRD_screencaptureui_5iR9gi/スクリーンショット 2026-10-16 14.45.00.png` (`1640 × 864`, desktop child-selection state).
+- Rendered implementation: `http://127.0.0.1:5196/#children`, captured in the in-app browser on tab 37 for iPhone, iPad, and PC preview modes.
+- Viewports: iPhone `393 × 852`, iPad `1024 × 768`, and PC `1366 × 768`; implementation was inspected at CSS density 1 inside the virtual-device runtime.
+- State: authenticated child-selection screen with both child cards visible and no modal open.
+- Full-view comparison: preserved the source card hierarchy, child pictograms, settings actions, two-card tablet/desktop layout, green `詳しく見る` CTA, add-child action, and privacy note. Only the requested middle card content changed.
+- Focused comparison: replaced both report-summary messages with a compact continuity widget showing the current consecutive-day count, `継続中` state, and seven weekday markers. The card widths, settings control, profile copy, and report CTA remain aligned with the source.
+- Fonts and typography: retained Roboto/Hiragino/Yu Gothic; the consecutive-day number is the primary emphasis, with compact supporting labels that remain legible without wrapping.
+- Spacing and layout rhythm: widget content fits without horizontal overflow at all three target sizes. Measured widget `clientWidth` and `scrollWidth` matched on iPhone (`195px`) and iPad/PC (`277px`).
+- Colors and visual tokens: yellow and blue child tones carry into the continuity states while the existing green primary report CTA is unchanged.
+- Image and icon fidelity: retained the existing pictogram system and used the project's Radix icon library for the continuity and completion states; no new raster asset was required.
+- Copy/content: removed `今週5日取り組みました` and `学校の話題が多く見られました` from the cards. Added accessible labels such as `12日連続で取り組んでいます`.
+- Primary interactions tested: each settings control still opens the management overlay; `詳しく見る` still opens the selected child's weekly overview; PC sidebar return to the child list still works.
+- No actionable P0, P1, or P2 mismatch remains.
+
+final result: passed
+
+## Dense weekly overview and alignment pass
+
+- Source of truth: the existing local two-section weekly overview plus the request to reduce empty space using information already available in each detail view.
+- Added compact detail-derived previews to `まずはこちら`: what was observed this week, learning/chat-specific prompt examples, and a short delivery-point category.
+- Expanded `学習とおしゃべり` with the key metrics, common time bands, leading subjects/topics, repetition counts, and small changes that are available from the detailed reports.
+- Kept `おしゃべり` on one line at iPhone, iPad, and PC widths.
+- Aligned leading pictograms, labels, action buttons, and trailing chevrons to shared visual centers; measured chevron center offsets were effectively 0px on PC.
+- Verified the iPhone overview remains a fixed, non-scrolling screen with the full primary action visible (`clientHeight` and `scrollHeight` both 747px).
+- Verified iPad and PC layouts use balanced two-column sections; the PC viewport also remained non-scrolling (`clientHeight` and `scrollHeight` both 720px).
+- No actionable clipping, overflow, unintended wrapping, or icon misalignment remains.
+
+final result: passed
+
+## Two-section weekly overview
+
+- Source visual truth: the established published weekly-overview design plus the user's requirement to remove `今週の利用時間` and retain only `まずはこちら` and `学習とおしゃべり`.
+- Browser-rendered implementation: `http://127.0.0.1:5193/#overview`, captured in the in-app browser for iPhone, iPad, and PC preview modes.
+- Viewports and states: iPhone `393 × 852`, iPad `1024 × 768`, and PC `1366 × 768`; あいさん weekly overview with no modal open.
+- Full-view evidence: iPhone shows exactly two vertically balanced cards; iPad and PC show the same two cards as a balanced two-column composition. The weekly usage chart and its heading are absent from the accessibility tree and rendered screen.
+- Focused-region evidence: the recommendation card now exposes `分数のたし算・4回` and `学校・友だちの話題` before the parent opens the detailed voice-prompt overlay. The weekly summary retains separate learning and chat detail actions.
+- Fonts and typography: the established hierarchy, line heights, and weights remain intact; key-point labels use compact supporting type without truncating their values.
+- Spacing and layout rhythm: iPhone uses measured rows of approximately `342px / 371px`, with `clientHeight` and `scrollHeight` both `747px` and `overflow-y: hidden`. iPad uses approximately `442px / 498px` columns; PC uses approximately `403px / 565px` columns after the persistent sidebar.
+- Colors and visual tokens: yellow recommendation, green learning, blue chat, white surfaces, radii, and shadows remain consistent with the existing Muchimon system.
+- Image quality and asset fidelity: existing Radix learning and chat icons are reused; no new raster or approximate assets were introduced.
+- Copy and content: only `まずはこちら` and `学習とおしゃべり` remain. The newly surfaced points summarize content available from the detailed reports rather than adding unrelated metrics.
+- Interaction and accessibility: all three detail actions remain real buttons; the recommendation key points have an accessible group label; no horizontal or fixed-page vertical overflow was observed.
+- Comparison history: the earlier overview devoted its first section to a seven-day usage chart. The revised layout removes that section, promotes actionable report-derived points, and reallocates space per device. No P0/P1/P2 issues remain.
+
+final result: passed
+
+## Personalized voice-prompt feedback
+
+- Source visual truth: the previously published weekly-overview screen at `https://tomoakiabebe.github.io/muchimon-parent-report/#overview`, reviewed together with the user's personalized-copy and category-separation requirements.
+- Browser-rendered implementation: `http://127.0.0.1:5192/#children` and `#overview`, verified in the in-app browser.
+- Viewport and state: iPhone preview, `393 × 852` CSS app screen; child list, fixed weekly overview, and the internally scrolled voice-prompt overlay for あいさん.
+- Full-view comparison evidence: the published and local weekly-overview captures were emitted in the same comparison pass. The section order, card proportions, color hierarchy, and fixed single-screen composition remain unchanged while the generic prompt is replaced with a data-specific example.
+- Focused-region evidence: the overlay was reviewed at its initial position and after an internal scroll. Both the green `学習` prompt and blue `おしゃべり` prompt remain readable, visually distinct, and reachable above the persistent return action.
+- Fonts and typography: existing hierarchy and weights are preserved; the longer personalized sentence wraps without clipping or truncation.
+- Spacing and layout rhythm: the overview still reports `clientHeight: 747`, `scrollHeight: 747`, and `overflow-y: hidden`; no landing-page scroll was introduced.
+- Colors and visual tokens: established green learning, blue chat, yellow recommendation, white surfaces, radii, and shadows are preserved.
+- Image quality and asset fidelity: existing Radix icons are reused for category identification; no new raster or approximate assets were added.
+- Copy and content: child-list CTAs now read `詳しく見る`. The featured prompt references `算数`, `分数のたし算`, and `4回`; the detail overlay separates a learning praise prompt from a school/friendship conversation prompt.
+- Interaction and accessibility: both child CTAs remain real buttons; the voice-detail action opens the modal; its internal scroll reaches both category cards and the guidance section.
+- Comparison history: the published version used a generic `今週もよく続けていたね` prompt and an undifferentiated example list. The local revision replaces it with report-grounded wording and category-specific cards. No P0/P1/P2 issues were found in the post-change pass.
+
+final result: passed
+
 ## iPad return path and responsive voice-prompt overlay
 
 - Source visual truth: the established Muchimon weekly-overview composition and the user's requirement that tablet/desktop controls fit their virtual canvases.
