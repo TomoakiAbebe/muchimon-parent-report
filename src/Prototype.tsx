@@ -97,6 +97,11 @@ function StreakCalendar({ child, onClose }: { child: Child; onClose: () => void 
   </div>;
 }
 
+/** サービス名の横のマーク。アプリと同じムチモンのアイコン（横に「ムチモン」とあるので飾りとして alt は空） */
+function BrandIcon() {
+  return <img className="brand-icon" src="/assets/muchimon/muchimon-icon.png" alt="" width={50} height={50} />;
+}
+
 function AuthScreen({ view, onNavigate, onLogin }: { view: "login" | "register" | "reset"; onNavigate: (view: "login" | "register" | "reset") => void; onLogin: () => void }) {
   const keyboard = useKeyboard();
   const { isKeyboardVisible } = useKeyboardInsets();
@@ -106,7 +111,7 @@ function AuthScreen({ view, onNavigate, onLogin }: { view: "login" | "register" 
 
   if (view === "reset") return <div className={`auth-app${isKeyboardVisible ? " keyboard-visible" : ""}`}>
     <MobileScroll className="auth-scroll"><main className="auth-content auth-reset-content" data-testid="reset-screen">
-      <div className="auth-brand"><span><LockClosedIcon /></span><b>ムチモン</b><small>保護者モード</small></div>
+      <div className="auth-brand"><BrandIcon /><b>ムチモン</b><small>保護者モード</small></div>
       {resetSent ? <section className="auth-success" aria-live="polite"><CheckCircledIcon /><h1>メールをご確認ください</h1><p>パスワード再設定用のリンクを送信しました。</p><button className="auth-primary" onClick={() => go("login")}>ログインへ戻る</button></section> : <>
         <header className="auth-heading"><span className="auth-heading-icon"><LockClosedIcon /></span><p>ログインでお困りの方へ</p><h1>パスワードの再設定</h1><span>ご登録の保護者メールアドレスへ、再設定用のリンクをお送りします。</span></header>
         <div className="auth-form"><label>メールアドレス<div className="auth-field"><EnvelopeClosedIcon /><KeyboardInput type="email" inputMode="email" autoComplete="email" placeholder="parent@example.com" /></div></label><button className="auth-primary" onClick={() => { keyboard.hide(); setResetSent(true); }}>再設定メールを送信</button></div>
@@ -119,7 +124,7 @@ function AuthScreen({ view, onNavigate, onLogin }: { view: "login" | "register" 
   if (view === "register") return <div className={`auth-app${isKeyboardVisible ? " keyboard-visible" : ""}`}>
     <MobileScroll className="auth-scroll"><main className="auth-content auth-register-content" data-testid="register-screen">
       <button className="auth-back" aria-label="ログインへ戻る" onClick={() => go("login")}><ChevronLeftIcon /></button>
-      <div className="auth-brand compact"><span><PersonIcon /></span><b>ムチモン</b><small>保護者モード</small></div>
+      <div className="auth-brand compact"><BrandIcon /><b>ムチモン</b><small>保護者モード</small></div>
       <header className="auth-heading"><p>はじめてご利用の方</p><h1>保護者アカウント登録</h1><span>保護者のメールアドレスで登録します。登録後、お子さまを追加できます。</span></header>
       <div className="auth-form"><label>メールアドレス<div className="auth-field"><EnvelopeClosedIcon /><KeyboardInput type="email" inputMode="email" autoComplete="email" placeholder="parent@example.com" /></div></label><label>パスワード<div className="auth-field"><LockClosedIcon /><KeyboardInput type={passwordVisible ? "text" : "password"} autoComplete="new-password" placeholder="8文字以上" /><button type="button" aria-label={passwordVisible ? "パスワードを隠す" : "パスワードを表示"} onClick={() => setPasswordVisible((visible) => !visible)}>{passwordVisible ? <EyeClosedIcon /> : <EyeOpenIcon />}</button></div></label><p className="auth-password-help">大文字・小文字・数字と記号を含む8文字以上で設定してください。</p><label>パスワード（確認）<div className="auth-field"><LockClosedIcon /><KeyboardInput type="password" autoComplete="new-password" placeholder="もう一度入力" /></div></label><label className="auth-consent"><input type="checkbox" /><span><u>利用規約</u>と<u>プライバシーポリシー</u>に同意します</span></label><button className="auth-primary" onClick={onLogin}>登録してはじめる</button></div>
       <button className="auth-text-button" onClick={() => go("login")}>すでにアカウントをお持ちの方</button>
@@ -128,7 +133,7 @@ function AuthScreen({ view, onNavigate, onLogin }: { view: "login" | "register" 
 
   return <div className={`auth-app${isKeyboardVisible ? " keyboard-visible" : ""}`}>
     <MobileScroll className="auth-scroll"><main className="auth-content auth-login-content" data-testid="login-screen">
-      <div className="auth-brand"><span><PersonIcon /></span><b>ムチモン</b><small>保護者モード</small></div>
+      <div className="auth-brand"><BrandIcon /><b>ムチモン</b><small>保護者モード</small></div>
       <header className="auth-heading"><p>おかえりなさい</p><h1>ログイン</h1><span>お子さまの今週の様子を確認しましょう。</span></header>
       <div className="auth-form"><label>メールアドレス<div className="auth-field"><EnvelopeClosedIcon /><KeyboardInput type="email" inputMode="email" autoComplete="email" placeholder="parent@example.com" /></div></label><label>パスワード<div className="auth-field"><LockClosedIcon /><KeyboardInput type={passwordVisible ? "text" : "password"} autoComplete="current-password" placeholder="パスワードを入力" /><button type="button" aria-label={passwordVisible ? "パスワードを隠す" : "パスワードを表示"} onClick={() => setPasswordVisible((visible) => !visible)}>{passwordVisible ? <EyeClosedIcon /> : <EyeOpenIcon />}</button></div></label><button className="auth-forgot" onClick={() => go("reset")}>パスワードをお忘れですか？</button><button className="auth-primary" onClick={onLogin}>ログイン<ChevronRightIcon /></button><p className="auth-prototype-note">このデザイン確認用画面では、未入力のままログインできます。</p></div>
       <div className="auth-divider"><span>はじめてご利用の方</span></div><button className="auth-secondary" onClick={() => go("register")}><PersonIcon />保護者アカウントを新規登録</button>
@@ -400,7 +405,7 @@ export default function Prototype() {
   return <div className={`report-app preview-${previewViewport} ${view === "children" ? "children-view" : view === "login" || view === "register" || view === "reset" ? "auth-view" : mode}`}>
     <PreviewViewportPicker value={previewViewport} onChange={(nextViewport) => { keyboard.hide(); setPreviewViewport(nextViewport); }} />
     {isAuthenticatedView ? <aside className="desktop-sidebar" aria-label="保護者モードのナビゲーション">
-      <div className="desktop-brand"><span><PersonIcon /></span><div><b>ムチモン</b><small>保護者モード</small></div></div>
+      <div className="desktop-brand"><BrandIcon /><div><b>ムチモン</b><small>保護者モード</small></div></div>
       <div className="desktop-child-switcher"><ChildPictogram tone={selectedChild.tone} compact /><div><small>表示中のお子さま</small><b>{selectedChild.name}さん</b></div></div>
       <nav>
         <button className={view === "children" ? "active" : ""} onClick={returnToChildren}><PersonIcon /><span>お子さま一覧</span></button>
